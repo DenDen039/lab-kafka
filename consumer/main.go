@@ -17,6 +17,7 @@ func main() {
 
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": *kafkaServer,
+		"group.id":             "0",
 		"auto.offset.reset": "smallest"})
 	if err != nil {
 		log.Fatalf("Cannot setup consumer: %v", err)
