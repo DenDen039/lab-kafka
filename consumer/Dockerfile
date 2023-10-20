@@ -12,7 +12,6 @@ FROM debian:bookworm
 RUN apt-get update && apt-get install -y \
     build-essential pkg-config git
 
-# Copy the binary from the previous stage
 COPY --from=builder /consumer /consumer
 
-CMD ["./consumer"]
+CMD ["/consumer"]
