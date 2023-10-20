@@ -4,8 +4,31 @@
 version: "2"
 
 services:
+  consumer:
+    container_name: consumer
+    image: lab/consumer:latest
+    depends_on:
+      init-kafka:
+        condition: service_completed_successfully
+    command: [
+      "/consumer",
+      "--server", "kafka:9092",
+    ]
+
+  producer:
+    container_name: producer
+    image: lab/producer:latest
+    depends_on:
+      init-kafka:
+        condition: service_completed_successfully
+    command: [
+      "/producer",
+      "--server", "kafka:9092",
+    ]
+
   kafka:
     image: docker.io/bitnami/kafka:3.6
+    container_name: kafka
     ports:
       - "9092:9092"
       - "9094:9094"
@@ -22,6 +45,23 @@ services:
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+
+  init-kafka:
+    image: confluentinc/cp-kafka:6.1.1
+    depends_on:
+      - kafka
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      kafka-topics --bootstrap-server kafka:9092 --list
+
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic transactions --replication-factor 1 --partitions 1
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server kafka:9092 --list
+      "
+
 volumes:
   kafka_data:
     driver: local
