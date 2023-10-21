@@ -24,13 +24,13 @@ func (p *TransactionsProducer) SyncProduce(message *kafka.Message) (*kafka.Messa
 		return nil, err
 	}
 
-	// eventResponse := <-p.deliveryChannel
-	// messageResponse := eventResponse.(*kafka.Message)
-	// if messageResponse.TopicPartition.Error != nil {
-	// 	return nil, fmt.Errorf("Delivery failed: %v\n", message.TopicPartition.Error)
-	// }
+	eventResponse := <-p.deliveryChannel
+	messageResponse := eventResponse.(*kafka.Message)
+	if messageResponse.TopicPartition.Error != nil {
+		return nil, fmt.Errorf("Delivery failed: %v\n", message.TopicPartition.Error)
+	}
 
-	return nil, nil
+	return messageResponse, nil
 }
 
 func (p *TransactionsProducer) SyncProduceWithRetry(
