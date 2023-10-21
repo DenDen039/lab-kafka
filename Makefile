@@ -9,5 +9,5 @@ stop:
 
 .PHONY: build
 build:
-	cd ./consumer && docker image build . --tag lab/producer:latest;
+	cd ./consumer && docker image build . --tag lab/consumer:latest;
 	cd ./producer && docker image build . --tag lab/producer:latest;
